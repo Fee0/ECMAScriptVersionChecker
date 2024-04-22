@@ -1,0 +1,27 @@
+[package]
+name = "js_version_checker"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+swc_common = "0.31.18"
+swc_ecma_ast = "0.107.2"
+swc_ecma_parser = "0.137.5"
+swc_ecma_visit = "0.93.2"
+
+strum = "0.23.0"
+strum_macros = "0.23.0"
+clap = "4"
+thiserror = "1.0.59"
+
+# Library configuration
+[lib]
+name = "js_version_checker_lib"
+path = "src/lib.rs"
+
+# Binary configuration
+[[bin]]
+name = "js_version_checker"
+path = "src/main.rs"
