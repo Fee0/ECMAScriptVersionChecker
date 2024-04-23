@@ -1,23 +1,14 @@
-#![allow(unused_imports)]
-#![allow(unused_variables)]
-
-
 extern crate swc_common;
 extern crate swc_ecma_parser;
 
-use std::cmp::Ordering;
-use std::collections::{HashMap, HashSet};
+use std::collections::HashSet;
 use std::fmt::{Debug, Formatter};
 use std::ops::Deref;
-use std::ptr::write;
-use strum_macros::Display;
-use swc_common::comments::CommentKind;
-use swc_common::{BytePos, FileName, SourceFile};
-use swc_ecma_ast::*;
-use swc_ecma_parser::{lexer::Lexer, EsConfig, Parser, StringInput, Syntax};
-use swc_ecma_visit::{Visit, VisitWith};
-use crate::es_features::EsFeature;
 
+use swc_ecma_ast::*;
+use swc_ecma_visit::{Visit, VisitWith};
+
+use crate::es_features::EsFeature;
 
 #[derive(Default)]
 pub struct FeatureFinder {
@@ -80,9 +71,9 @@ impl Visit for FeatureFinder {
     fn visit_bin_expr(&mut self, n: &BinExpr) {
         if let Expr::PrivateName(_) = n.left.deref() {
             // Check for the 'in' operator which is commonly used for brand checks
-            if let BinaryOp::In = &n.op
-            {
-                self.set.insert(EsFeature::ErgonomicBrandChecksForPrivateFields);
+            if let BinaryOp::In = &n.op {
+                self.set
+                    .insert(EsFeature::ErgonomicBrandChecksForPrivateFields);
             }
         }
     }
@@ -134,12 +125,13 @@ impl Visit for FeatureFinder {
                 if let Expr::Ident(a) = &m.obj.deref() {
                     if let MemberProp::Ident(i) = &m.prop {
                         if &i.sym == "hasOwn" && &a.sym == "Object" {
-                            self.set.insert(EsFeature::AccessibleObjectPrototypeHasOwnProperty);
+                            self.set
+                                .insert(EsFeature::AccessibleObjectPrototypeHasOwnProperty);
                         }
                     }
                 }
 
-                if let Expr::Ident(a) = &m.obj.deref() {
+                if let Expr::Ident(_) = &m.obj.deref() {
                     if let MemberProp::Ident(i) = &m.prop {
                         if &i.sym == "fromEntries" {
                             self.set.insert(EsFeature::ObjectFromEntries);
@@ -176,9 +168,9 @@ impl Visit for FeatureFinder {
             if let Expr::Ident(a) = e.deref() {
                 if &a.sym == "BigInt" {
                     if let Some(args) = n.args.get(0) {
-                        if let Expr::Lit(Lit::Str(s)) = &args.expr.deref() {
+                        if let Expr::Lit(Lit::Str(_)) = &args.expr.deref() {
                             self.set.insert(EsFeature::BigInt);
-                        } else if let Expr::Lit(Lit::Num(n)) = &args.expr.deref() {
+                        } else if let Expr::Lit(Lit::Num(_)) = &args.expr.deref() {
                             self.set.insert(EsFeature::BigInt);
                         }
                     }
@@ -190,15 +182,21 @@ impl Visit for FeatureFinder {
 
     fn visit_class_member(&mut self, n: &ClassMember) {
         match n {
-            ClassMember::PrivateMethod(_) | ClassMember::PrivateProp(_) | ClassMember::ClassProp(_) => { self.set.insert(EsFeature::ClassFields); }
-            ClassMember::Method(method) if method.is_static => { self.set.insert(EsFeature::ClassFields); }
+            ClassMember::PrivateMethod(_)
+            | ClassMember::PrivateProp(_)
+            | ClassMember::ClassProp(_) => {
+                self.set.insert(EsFeature::ClassFields);
+            }
+            ClassMember::Method(method) if method.is_static => {
+                self.set.insert(EsFeature::ClassFields);
+            }
             _ => {}
         }
         n.visit_children_with(self)
     }
 
     fn visit_expr(&mut self, n: &Expr) {
-        if let Expr::OptChain(c) = n {
+        if let Expr::OptChain(_) = n {
             self.set.insert(EsFeature::OptionalChaining);
         }
 
@@ -225,7 +223,7 @@ impl Visit for FeatureFinder {
     }
 
     fn visit_lit(&mut self, n: &Lit) {
-        if let Lit::BigInt(i) = n {
+        if let Lit::BigInt(_) = n {
             self.set.insert(EsFeature::BigInt);
         }
         if let Lit::Num(i) = n {
@@ -262,7 +260,9 @@ impl Visit for FeatureFinder {
                                 self.set.insert(EsFeature::RegExpMatchIndices);
                             }
                             if str.value.contains("v") {
-                                self.set.insert(EsFeature::RegexpVFlagWithSetNotationAndPropertiesOfStrings);
+                                self.set.insert(
+                                    EsFeature::RegexpVFlagWithSetNotationAndPropertiesOfStrings,
+                                );
                             }
                         }
                     }
@@ -295,7 +295,8 @@ impl Visit for FeatureFinder {
             self.set.insert(EsFeature::RegExpMatchIndices);
         }
         if n.flags.contains("v") {
-            self.set.insert(EsFeature::RegexpVFlagWithSetNotationAndPropertiesOfStrings);
+            self.set
+                .insert(EsFeature::RegexpVFlagWithSetNotationAndPropertiesOfStrings);
         }
         if n.exp.contains("(?<=") || n.exp.contains("(?<!") {
             self.set.insert(EsFeature::RegExpLookbehindAssertions);

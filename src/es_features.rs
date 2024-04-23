@@ -1,7 +1,11 @@
 use std::cmp::Ordering;
+
 use strum_macros::Display;
+
 use crate::es_version::EsVersion;
 
+/// Stage 4 proposals
+/// https://github.com/tc39/proposals/blob/HEAD/finished-proposals.md
 #[derive(Hash, Debug, Display, Eq, Copy, Clone)]
 pub enum EsFeature {
     // ArrayPrototypeIncludes,
@@ -66,6 +70,7 @@ pub enum EsFeature {
 }
 
 impl EsFeature {
+    /// Maps language features to ECMAScript versions
     pub fn version(&self) -> EsVersion {
         match self {
             EsFeature::ExponentiationOperator => EsVersion::ES7,
@@ -113,7 +118,10 @@ impl Ord for EsFeature {
         self.version().cmp(&other.version())
     }
 
-    fn max(self, other: Self) -> Self where Self: Sized {
+    fn max(self, other: Self) -> Self
+    where
+        Self: Sized,
+    {
         let max = self.version().max(other.version());
         return if self.version() == max { self } else { other };
     }
@@ -124,5 +132,3 @@ impl PartialOrd<Self> for EsFeature {
         Some(self.version().cmp(&other.version()))
     }
 }
-
-
