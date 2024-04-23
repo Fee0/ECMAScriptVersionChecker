@@ -225,6 +225,7 @@ dependencies = [
 name = "js_version_checker"
 version = "0.1.0"
 dependencies = [
+ "anstyle",
  "clap",
  "strum",
  "strum_macros",

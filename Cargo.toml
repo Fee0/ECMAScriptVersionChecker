@@ -13,8 +13,9 @@ swc_ecma_visit = "0.93.2"
 
 strum = "0.23.0"
 strum_macros = "0.23.0"
-clap = "4"
+clap = { version = "4.5.4", features = ["cargo", "color"] }
 thiserror = "1.0.59"
+anstyle = "1.0.6"
 
 # Library configuration
 [lib]
