@@ -94,33 +94,24 @@ impl Visit for FeatureFinder {
             if let Expr::Member(m) = e.deref() {
                 if let Expr::Ident(a) = &m.obj.deref() {
                     if let MemberProp::Ident(i) = &m.prop {
-                        match (i.sym.deref(), a.sym.deref()) {
-                            ("values" | "entries", "Object") => {
-                                self.set.insert(EsFeature::ObjectValuesEntries);
-                            }
-                            _ => {}
+                        if let ("values" | "entries", "Object") = (i.sym.deref(), a.sym.deref()) {
+                            self.set.insert(EsFeature::ObjectValuesEntries);
                         }
                     }
                 }
 
                 if let Expr::Array(_) = &m.obj.deref() {
                     if let MemberProp::Ident(i) = &m.prop {
-                        match i.sym.deref() {
-                            "groupBy" => {
-                                self.set.insert(EsFeature::ArrayGrouping);
-                            }
-                            _ => {}
+                        if let "groupBy" = i.sym.deref() {
+                            self.set.insert(EsFeature::ArrayGrouping);
                         }
                     }
                 }
 
                 if let Expr::Ident(a) = &m.obj.deref() {
                     if let MemberProp::Ident(i) = &m.prop {
-                        match (i.sym.deref(), a.sym.deref()) {
-                            ("groupBy", "Object" | "Map") => {
-                                self.set.insert(EsFeature::ArrayGrouping);
-                            }
-                            _ => {}
+                        if let ("groupBy", "Object" | "Map") = (i.sym.deref(), a.sym.deref()) {
+                            self.set.insert(EsFeature::ArrayGrouping);
                         }
                     }
                 }
@@ -168,10 +159,8 @@ impl Visit for FeatureFinder {
 
                 if let Expr::Ident(a) = &m.obj.deref() {
                     if let MemberProp::Ident(i) = &m.prop {
-                        if &a.sym == "Atomics" {
-                            if &i.sym == "waitAsync" {
-                                self.set.insert(EsFeature::AtomicsWaitAsync);
-                            }
+                        if &a.sym == "Atomics" && &i.sym == "waitAsync" {
+                            self.set.insert(EsFeature::AtomicsWaitAsync);
                         }
                     }
                 }
