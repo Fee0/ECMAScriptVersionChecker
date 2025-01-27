@@ -1,12 +1,10 @@
-use std::cmp::Ordering;
-
 use strum_macros::Display;
 
 use crate::es_version::EsVersion;
 
 /// Stage 4 proposals
 /// https://github.com/tc39/proposals/blob/HEAD/finished-proposals.md
-#[derive(Hash, Debug, Display, Eq, Copy, Clone)]
+#[derive(Hash, Debug, Display, Eq, Copy, Clone, Ord, PartialEq, PartialOrd)]
 pub enum EsFeature {
     // ArrayPrototypeIncludes,
     ExponentiationOperator,
@@ -104,35 +102,5 @@ impl EsFeature {
             EsFeature::ArrayGrouping => EsVersion::ES15,
             EsFeature::PromiseWithResolvers => EsVersion::ES15,
         }
-    }
-}
-
-impl PartialEq<Self> for EsFeature {
-    fn eq(&self, other: &Self) -> bool {
-        self.version() == other.version()
-    }
-}
-
-impl Ord for EsFeature {
-    fn cmp(&self, other: &Self) -> Ordering {
-        self.version().cmp(&other.version())
-    }
-
-    fn max(self, other: Self) -> Self
-    where
-        Self: Sized,
-    {
-        let max = self.version().max(other.version());
-        if self.version() == max {
-            self
-        } else {
-            other
-        }
-    }
-}
-
-impl PartialOrd<Self> for EsFeature {
-    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        Some(self.version().cmp(&other.version()))
     }
 }
