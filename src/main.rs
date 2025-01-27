@@ -4,7 +4,7 @@ use std::error::Error;
 use std::fs::File;
 use std::io::Read;
 
-use clap::{Arg, ColorChoice, command};
+use clap::{command, Arg, ColorChoice};
 use log::error;
 
 fn main() -> Result<(), Box<dyn Error>> {

@@ -1,11 +1,11 @@
 use std::collections::HashSet;
 use std::fmt::Debug;
-
-use swc_common::{BytePos, FileName, SourceFile};
+use std::rc::Rc;
 use swc_common::input::StringInput;
+use swc_common::{BytePos, FileName, SourceFile};
 use swc_ecma_ast::EsVersion;
-use swc_ecma_parser::{EsConfig, Parser, Syntax};
 use swc_ecma_parser::lexer::Lexer;
+use swc_ecma_parser::{EsSyntax, Parser, Syntax};
 use swc_ecma_visit::VisitWith;
 use thiserror::Error;
 
@@ -26,15 +26,15 @@ pub type Result<T> = core::result::Result<T, Error>;
 
 fn analyse(js: impl AsRef<str>) -> Result<HashSet<EsFeature>> {
     let f = SourceFile::new(
-        FileName::Anon,
+        Rc::from(FileName::Anon),
         false,
-        FileName::Anon,
+        Rc::from(FileName::Anon),
         String::from(js.as_ref()),
         BytePos(1),
     );
 
     let lexer = Lexer::new(
-        Syntax::Es(EsConfig {
+        Syntax::Es(EsSyntax {
             jsx: false,
             ..Default::default()
         }),

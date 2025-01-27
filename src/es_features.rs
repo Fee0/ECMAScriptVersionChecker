@@ -123,7 +123,11 @@ impl Ord for EsFeature {
         Self: Sized,
     {
         let max = self.version().max(other.version());
-        return if self.version() == max { self } else { other };
+        if self.version() == max {
+            self
+        } else {
+            other
+        }
     }
 }
 

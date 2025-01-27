@@ -60,12 +60,11 @@ impl Visit for FeatureFinder {
         if !self.in_function {
             // wait on top level
             self.set.insert(EsFeature::TopLevelAwait);
-            n.visit_children_with(self)
         } else {
             // wait inside a function
             self.set.insert(EsFeature::AsyncFunctions);
-            n.visit_children_with(self)
         }
+        n.visit_children_with(self)
     }
 
     fn visit_bin_expr(&mut self, n: &BinExpr) {
@@ -179,7 +178,7 @@ impl Visit for FeatureFinder {
             }
             if let Expr::Ident(a) = e.deref() {
                 if &a.sym == "BigInt" {
-                    if let Some(args) = n.args.get(0) {
+                    if let Some(args) = n.args.first() {
                         if let Expr::Lit(Lit::Str(_)) = &args.expr.deref() {
                             self.set.insert(EsFeature::BigInt);
                         } else if let Expr::Lit(Lit::Num(_)) = &args.expr.deref() {
@@ -279,7 +278,7 @@ impl Visit for FeatureFinder {
                         }
                     }
 
-                    if let Some(flags) = args.get(0) {
+                    if let Some(flags) = args.first() {
                         if let Expr::Lit(Lit::Str(str)) = flags.expr.deref() {
                             if str.value.contains("(?<=") || str.value.contains("(?<!") {
                                 self.set.insert(EsFeature::RegExpLookbehindAssertions);
@@ -336,7 +335,7 @@ impl Visit for FeatureFinder {
 
     fn visit_try_stmt(&mut self, n: &TryStmt) {
         if let Some(handler) = &n.handler {
-            if let None = handler.param {
+            if handler.param.is_none() {
                 self.set.insert(EsFeature::OptionalCatchBinding);
             }
         }
