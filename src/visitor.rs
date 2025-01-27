@@ -103,6 +103,17 @@ impl Visit for FeatureFinder {
                     }
                 }
 
+                if let Expr::Array(_) = &m.obj.deref() {
+                    if let MemberProp::Ident(i) = &m.prop {
+                        match i.sym.deref() {
+                            "groupBy" => {
+                                self.set.insert(EsFeature::ArrayGrouping);
+                            }
+                            _ => {}
+                        }
+                    }
+                }
+
                 if let Expr::Ident(a) = &m.obj.deref() {
                     if let MemberProp::Ident(i) = &m.prop {
                         match (i.sym.deref(), a.sym.deref()) {
