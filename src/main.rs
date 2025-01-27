@@ -24,7 +24,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             f.read_to_string(&mut code)?;
 
             let version = js_version_checker_lib::get_min_ecma_version(&code)?;
-            println!("min version: {:?}", version);
+            println!("Requires at least {:?} to run", version);
 
             let features = js_version_checker_lib::get_ecma_features(&code)?;
             println!("language features: {:?}", features);
