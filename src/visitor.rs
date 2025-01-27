@@ -76,6 +76,7 @@ impl Visit for FeatureFinder {
                     .insert(EsFeature::ErgonomicBrandChecksForPrivateFields);
             }
         }
+        n.visit_children_with(self)
     }
 
     fn visit_binary_op(&mut self, n: &BinaryOp) {
