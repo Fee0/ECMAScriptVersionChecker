@@ -13,8 +13,9 @@ fn main() -> Result<(), Box<dyn Error>> {
     let match_result = command!()
         .version("1")
         .about("Checks the ECMAScript version of a Javascript file")
-        .arg(Arg::new("path").help("path to js file"))
+        .arg(Arg::new("path").help("path to JavaScript file"))
         .color(ColorChoice::Always)
+        .arg_required_else_help(true)
         .get_matches();
 
     if let Some(path) = match_result.get_one::<String>("path") {
