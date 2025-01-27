@@ -109,7 +109,7 @@ impl EsFeature {
 
 impl PartialEq<Self> for EsFeature {
     fn eq(&self, other: &Self) -> bool {
-        self.version() != other.version()
+        self.version() == other.version()
     }
 }
 
